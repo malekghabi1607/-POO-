@@ -1,0 +1,484 @@
+
+
+TD Arbres Binaires
+Table of Contents
+
+
+class Noeud {
+    int info;
+    Noeud * fg;
+    Noeud * fd;
+};
+
+class Arbre {
+    Noeud *racine;
+public :
+    Arbre();
+    ~Arbre();
+    // ...
+};
+
+
+______________________________________________________________________________________________________________________
+
+1. Constructeur
+
+Écrire un constructeur d'arbre vide, un constructeur d’arbre avec un pointeur de Noeud en argument et un constructeur de Noeud avec un int et 2 pointeurs de Noeud.
+
+Exemple d'utilisation :
+
+Arbre A(new Noeud(5, new Noeud(4, NULL,
+                                  NULL),
+                     new Noeud(2, NULL,
+                                  new Noeud(12, NULL,
+                                                NULL))));
+Solution
+Arbre::Arbre() {
+    this->racine = NULL;
+}
+
+Arbre::Arbre(Noeud *r) {
+    this->racine = r;
+}
+
+Noeud::Noeud(int I, Noeud *FG, Noeud *FD) {
+    this->info = I;
+    this->fg = FG;
+    this->fd = FD;
+}
+
+
+
+______________________________________________________________________________________________________________________
+
+
+2. Destructeur
+
+Écrire les destructeurs de Noeud et Arbre.
+
+Solution
+Noeud::~Noeud() {
+    if (this->fg != NULL) {
+        delete this->fg;
+    }
+    if (this->fd != NULL) {
+        delete this->fd;
+    }
+}
+
+Arbre::~Arbre() {
+    if (this->racine != NULL) {
+        delete this->racine;
+    }
+}
+
+
+
+______________________________________________________________________________________________________________________
+
+
+
+3. Destructeur
+
+Écrire une fonction qui libère la mémoire allouée par l'arbre.
+
+Solution
+???
+
+
+
+
+
+
+
+______________________________________________________________________________________________________________________
+
+
+
+
+
+4. Affichage de l'arbre
+
+Écrire une fonction qui affiche pour chaque nœud.
+
+Solution
+void Noeud::afficher() {
+    cout << this->info << " ";
+    if (this->fg != NULL or this->fd != NULL) {
+        cout << "( ";
+        if (this->fg != NULL) {
+            this->fg->afficher();
+        }
+        cout << ", ";
+        if (this->fd != NULL) {
+            this->fd->afficher();
+        }
+        cout << " )";
+    }
+}
+
+void Arbre::afficher() {
+    if (this->racine != NULL) {
+        cout << "( ";
+        this->racine->afficher();
+        cout << " )" << endl;
+    }
+}
+
+
+
+
+
+
+
+______________________________________________________________________________________________________________________
+
+
+
+
+5. Hauteur d'un arbre
+
+Fonction qui retourne la hauteur d’un arbre. La hauteur d’un arbre vide est 0, la hauteur d’un arbre à 1 noeud est 1.
+
+Solution
+int Noeud::hauteur() {
+    if (this->fg != NULL && this->fd != NULL) {
+        return 1 + max(this->fg->hauteur(), this->fd->hauteur());
+    }
+    if (this->fg != NULL) {
+        return 1 + this->fg->hauteur();
+    }
+    if (this->fd != NULL) {
+        return 1 + this->fd->hauteur();
+    }
+    return 1;
+}
+
+int Arbre::hauteur() {
+    if (this->racine != NULL) {
+        return this->racine->hauteur();
+    }
+    return 0;
+}
+int Noeud::hauteur() {
+    int hauteurGauche = this->fg == NULL ? 0 : this->fg->hauteur();
+    int hauteurDroite = this->fd == NULL ? 0 : this->fd->hauteur();
+    return 1 + max(hauteurGauche, hauteurDroite);
+}
+
+int Arbre::hauteur() {
+    if (this->racine == NULL) {
+        return 0;
+    }
+    return this->racine->hauteur();
+}
+
+
+
+
+
+______________________________________________________________________________________________________________________
+
+
+
+
+
+6. Maximum
+
+Fonction qui détermine le maximum des valeurs contenues dans l’arbre.
+
+Solution
+#include <cmath>
+
+int Noeud::maximum() {
+    int m = this->info;
+    if (this->fg != NULL and this->fd != NULL) {
+        return max(m, max(this->fg->maximum(), this->fd->maximum()));
+    }
+    if (this->fg != NULL) {
+        return max(m, this->fg->maximum());
+    }
+    if (this->fd != NULL) {
+        return max(m, this->fd->maximum());
+    }
+    return m;
+}
+
+
+
+int Arbre::maximum() {
+    if (this->racine == NULL) {
+        cout << "L'arbre est vide.";
+        exit(1);
+    }
+    return this->racine->maximum();
+}
+
+
+
+
+
+
+
+#include <cmath>
+#include <climits>
+
+int Noeud::maximum() {
+    int maxGauche = this->fg == NULL ? INT_MIN : this->fg->maximum();
+    int maxDroite = this->fd == NULL ? INT_MIN : this->fd->maximum();
+    return max(this->info, maxGauche, maxDroite);
+}
+
+int Arbre::maximum() {
+    if (this->racine == NULL) {
+        cout << "L'arbre est vide.";
+        exit(1);
+    }
+    return this->racine->maximum();
+}
+
+
+
+
+
+
+
+______________________________________________________________________________________________________________________
+
+
+
+
+
+
+
+7. Maximum dans un arbre ordonné
+
+Même question, mais en supposant que l’arbre est ordonné.
+
+Solution
+int Noeud::maximum_ord() {
+    if (this->fd == NULL) {
+        return this->info;
+    }
+    return this->fd->maximum_ord();
+}
+
+int Arbre::maximum_ord() {
+    if (this->racine == NULL) {
+        cout << "L'arbre est vide.";
+        exit(1);
+    }
+    return this->racine->maximum_ord();
+}
+
+
+
+
+
+______________________________________________________________________________________________________________________
+
+
+
+8. Insertion dans un arbre ordonné
+
+Écrire une fonction qui insère, en feuille, une valeur dans un arbre ordonné.
+
+Solution
+void Noeud::insert_ord(int v) {
+    if (v < this->info) {
+        if (this->fg == NULL) {
+            this->fg = new Noeud(v, NULL, NULL);
+        } else {
+            this->fg->insert_ord(v);
+        }
+    } else {
+        if (this->fd == NULL) {
+            this->fd = new Noeud(v, NULL, NULL);
+        } else {
+            this->fd->insert_ord(v);
+        }
+    }
+    return;
+}
+
+void Arbre::insert_ord(int v) {
+    if (this->racine == NULL) {
+        this->racine = new Noeud(v, NULL, NULL);
+        return;
+    }
+    this->racine->insert_ord(v);
+}
+
+void Arbre::insert_ord(int v) {
+    if (this->racine == NULL) {
+        this->racine = new Noeud(v, NULL, NULL);
+    } else {
+        this->racine->insert_ord(v);
+    }
+}
+
+
+
+
+
+______________________________________________________________________________________________________________________
+
+
+
+
+
+9. Égalité de deux arbres
+
+Fonction booléenne testant si deux arbres sont égaux, c'est à dire s'ils contiennent les mêmes valeurs aux mêmes "endroits".
+
+Solution
+bool Noeud::identique(Noeud *n) {
+    if (this->info != n->info) {
+        return false;
+    } 
+
+    if ((this->fg == NULL) && (n->fg == NULL) && (this->fd == NULL) && (n->fd == NULL)) {
+        return true;
+    }
+    if ((this->fg == NULL) && (n->fg == NULL) && (this->fd != NULL) && (n->fd != NULL)) {
+        return this->fd->identique(n->fd);
+    }
+    if ((this->fd == NULL) && (n->fd == NULL) && (this->fg != NULL) && (n->fg != NULL)) {
+        return this->fg->identique(n->fg);
+    }
+    if ((this->fd != NULL) && (n->fd != NULL) && (this->fg != NULL) && (n->fg != NULL)) {
+        return this->fg->identique(n->fg) && this->fd->identique(n->fd);
+    }
+    return false;
+}
+
+
+bool Arbre::identique(const Arbre &a) {
+    if ((this->racine == NULL) && (a.racine == NULL)) {
+        return true;
+    }
+    if ((this->racine == NULL) or (a.racine == NULL)) {
+        return false;
+    }
+    return this->racine->identique(a.racine);
+}
+bool arbre::egalite(arbre a) {
+    return egalite(racine, a.racine);
+}
+
+bool arbre::egalite(noeud * n1, noeud * n2) {
+    if (n1 == NULL and n2 == NULL)
+        return true;
+    if (n1 == NULL or n2 == NULL)
+        return false;
+    return n1 -> info == n2 -> info
+           and egalite(n1 -> fg, n2 -> fg)
+           and egalite(n1 -> fd, n2 -> fd);
+}
+
+
+
+______________________________________________________________________________________________________________________
+
+
+
+
+
+10. Constructeur par recopie
+
+Ecrire une fonction d’en-tête Noeud * Arbre::copie(Noeud * n) qui fabrique la copie d'un sous-arbre et l'utiliser pour écrire le constructeur de recopie.
+
+Solution
+noeud * arbre::copie(noeud * n) {
+    if (n == NULL)
+        return NULL;
+    return new noeud(n -> info, copie(n -> fg), copie(n -> fd));
+}
+
+arbre::arbre(arbre & A) {
+    racine = copie(A.racine);
+}
+
+
+
+
+
+______________________________________________________________________________________________________________________
+
+
+
+
+
+
+11. Fabrication de l'arbre miroir d'un arbre binaire
+
+Fabrication d’un nouvel arbre binaire, image inversée de l'arbre de départ.
+
+Solution
+void arbre::arbre_miroir(arbre & A) {
+    if (racine != NULL)
+        detruit(racine);
+    racine = arbre_miroir(A.racine);
+}
+
+noeud * arbre::arbre_miroir(noeud * n) {
+    if (n == NULL)
+        return NULL;
+    return new noeud(n -> info, arbre_miroir(n -> fd), arbre_miroir(n -> fg));
+}
+
+
+
+______________________________________________________________________________________________________________________
+
+
+
+
+
+12. Deux arbres binaires sont-ils des images inversés l'un de l'autre ?
+
+Fonction booléenne testant si un arbre binaire est image miroir d’un autre.
+
+Solution
+bool arbre::miroir(arbre & A) {
+    return miroir(racine, A.racine);
+}
+
+bool arbre::miroir(noeud * n1, noeud * n2) {
+    if (n1 == NULL && n2 == NULL)
+        return true;
+    if (n1 == NULL || n2 == NULL)
+        return false;
+    return n1 -> info == n2 -> info
+           && miroir(n1 -> fg, n2 -> fd)
+           && miroir(n1 -> fd, n2 -> fg);
+}
+
+
+
+
+______________________________________________________________________________________________________________________
+
+
+
+
+
+13. Sous-arbre
+
+Fonction booléenne testant si un arbre est contenu dans un autre.
+
+Solution
+bool arbre::sous_arbre(arbre & A) {
+    // le premier est un sous-arbre du second
+    return sous_arbre(racine, A.racine);
+}
+
+bool arbre::sous_arbre(noeud * n1, noeud * n2) {
+    // n1 est sous-arbre de n2 si
+    if (egalite(n1, n2))
+        return true;            // il est egal à n2
+    if (n2 != NULL)
+        return sous_arbre(n1, n2 -> fg) // il est sous_arbre du fg de n2
+               || sous_arbre(n1, n2 -> fd);// il est sous_arbre du fd de n2
+    return false;
+}
